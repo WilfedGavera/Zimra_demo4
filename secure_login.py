@@ -5,9 +5,23 @@ from sqlalchemy import create_engine
 import urllib.parse
 
 # --- DATABASE CONNECTION ---
-password_db = urllib.parse.quote_plus("123Manchester$$")
-engine = create_engine(f"postgresql://neondb_owner:npg_85OjIYKDFerL@ep-gentle-darkness-a8z2xwhb-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require")
+# This looks for the secret you just pasted in Step 1
+try:
+    if "database" in st.secrets:
+        db_url = st.secrets["database"]["url"]
+        # Use 'postgresql+psycopg2' to explicitly tell SQLAlchemy which driver to use
+        if db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+psycopg2://")
+        
+        engine = create_engine(db_url)
+    else:
+        st.error("Missing Database Secrets! Go to Settings > Secrets in Streamlit Cloud.")
+        st.stop()
+except Exception as e:
+    st.error(f"Configuration Error: {e}")
+    st.stop()
 
+# Now the rest of your app (Login, Analytics, etc.) will use this engine
 # --- AUTHENTICATION LOGIC ---
 def check_login(username, password):
     query = f"SELECT password_hash, role FROM users WHERE username = '{username}'"
@@ -218,3 +232,4 @@ with tab3:
             
 
         st.button("📄 Generate PDF Audit Notice (Simulated)", type="primary")
+
