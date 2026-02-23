@@ -5,37 +5,21 @@ from sqlalchemy import create_engine
 import urllib.parse
 
 # --- DATABASE CONNECTION ---
-
-# 1. Attempt to get the secret
-try:
-    db_url = st.secrets["database"]["url"]
-    
-    # 2. Fix the prefix for SQLAlchemy compatibility
-    if db_url.startswith("postgresql://"):
-        db_url = db_url.replace("postgresql://", "postgresql+psycopg2://")
-    
-    # 3. Create the engine
-    engine = create_engine(db_url)
-    
-except KeyError:
-    st.error("Missing Database Secrets! Go to Settings > Secrets in Streamlit Cloud.")
-    st.stop()
-# This looks for the secret you just pasted in Step 1
 try:
     if "database" in st.secrets:
         db_url = st.secrets["database"]["url"]
-        # Use 'postgresql+psycopg2' to explicitly tell SQLAlchemy which driver to use
+        
+        # SQLAlchemy needs 'postgresql+psycopg2' instead of just 'postgresql'
         if db_url.startswith("postgresql://"):
             db_url = db_url.replace("postgresql://", "postgresql+psycopg2://")
-        
+            
         engine = create_engine(db_url)
     else:
         st.error("Missing Database Secrets! Go to Settings > Secrets in Streamlit Cloud.")
         st.stop()
 except Exception as e:
-    st.error(f"Configuration Error: {e}")
+    st.error(f"Error accessing secrets: {e}")
     st.stop()
-
 # Now the rest of your app (Login, Analytics, etc.) will use this engine
 # --- AUTHENTICATION LOGIC ---
 def check_login(username, password):
@@ -247,5 +231,6 @@ with tab3:
             
 
         st.button("📄 Generate PDF Audit Notice (Simulated)", type="primary")
+
 
 
