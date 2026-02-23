@@ -5,6 +5,21 @@ from sqlalchemy import create_engine
 import urllib.parse
 
 # --- DATABASE CONNECTION ---
+
+# 1. Attempt to get the secret
+try:
+    db_url = st.secrets["database"]["url"]
+    
+    # 2. Fix the prefix for SQLAlchemy compatibility
+    if db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg2://")
+    
+    # 3. Create the engine
+    engine = create_engine(db_url)
+    
+except KeyError:
+    st.error("Missing Database Secrets! Go to Settings > Secrets in Streamlit Cloud.")
+    st.stop()
 # This looks for the secret you just pasted in Step 1
 try:
     if "database" in st.secrets:
@@ -232,4 +247,5 @@ with tab3:
             
 
         st.button("📄 Generate PDF Audit Notice (Simulated)", type="primary")
+
 
