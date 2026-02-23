@@ -6,7 +6,7 @@ import urllib.parse
 
 # --- DATABASE CONNECTION ---
 password_db = urllib.parse.quote_plus("123Manchester$$")
-engine = create_engine(f"postgresql://postgres:{password_db}@localhost:5432/zimra_audit_results_db")
+engine = create_engine(f"postgresql://neondb_owner:npg_85OjIYKDFerL@ep-gentle-darkness-a8z2xwhb-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require")
 
 # --- AUTHENTICATION LOGIC ---
 def check_login(username, password):
@@ -216,4 +216,5 @@ with tab3:
                              title="Key Risk Drivers for this Taxpayer", color="Value", color_continuous_scale="Reds")
             st.plotly_chart(fig_bar, use_container_width=True)
             
+
         st.button("📄 Generate PDF Audit Notice (Simulated)", type="primary")
